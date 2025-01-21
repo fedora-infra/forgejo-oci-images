@@ -1,6 +1,6 @@
 FROM quay.io/fedora/fedora:rawhide
 
-RUN dnf install -y git-core nodejs npm golang && dnf clean all
+RUN dnf install -y git-core wget nodejs npm golang && dnf clean all
 
 
 ARG GOPROXY
