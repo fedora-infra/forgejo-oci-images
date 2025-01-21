@@ -5,6 +5,8 @@ RUN dnf install -y git-core wget nodejs npm golang && dnf clean all
 
 ARG GOPROXY
 ENV GOPROXY=${GOPROXY:-direct}
+ARG GOPATH
+ENV GOPATH=""
 
 ARG RELEASE_VERSION
 ENV TAGS="bindata timetzdata $TAGS"
@@ -24,10 +26,15 @@ LABEL maintainer="codeberg@fedoraproject.org" \
       org.opencontainers.image.title="Forgejo. Beyond coding. We forge." \
       org.opencontainers.image.description="Forgejo for distgit"
 
-RUN wget -qO- https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz | tar -xzvf -
+RUN mkdir -p ${GOPATH}/src/code.gitea.io/gitea
 
-COPY forgejo ${GOPATH}/src/code.gitea.io/gitea
+ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
+
+RUN tar -xvzf ${GOPATH}/forgejo.tar.gz -C ${GOPATH}/src/code.gitea.io/gitea/ --strip-components=1
+
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
+
+RUN ls -la
 
 RUN make clean
 RUN make frontend
