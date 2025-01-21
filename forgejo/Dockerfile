@@ -2,6 +2,17 @@ FROM quay.io/fedora/fedora:rawhide
 
 RUN dnf install -y git-core nodejs npm golang && dnf clean all
 
+
+ARG GOPROXY
+ENV GOPROXY=${GOPROXY:-direct}
+
+ARG RELEASE_VERSION
+ENV TAGS="bindata timetzdata $TAGS"
+ARG CGO_EXTRA_CFLAGS
+
+ENV CGO_ENABLED=1
+
+
 LABEL maintainer="codeberg@fedoraproject.org" \
       org.opencontainers.image.authors="Forgejo on Fedora" \
       org.opencontainers.image.url="https://forgejo.fedoraproject.org" \
@@ -12,3 +23,7 @@ LABEL maintainer="codeberg@fedoraproject.org" \
       org.opencontainers.image.licenses="GPL-3.0-or-later" \
       org.opencontainers.image.title="Forgejo. Beyond coding. We forge." \
       org.opencontainers.image.description="Forgejo for distgit"
+
+RUN wget -qO- https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz | tar -xzvf -
+
+
