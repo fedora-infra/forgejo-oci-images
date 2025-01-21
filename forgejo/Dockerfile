@@ -26,7 +26,7 @@ LABEL maintainer="codeberg@fedoraproject.org" \
 
 RUN wget -qO- https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz | tar -xzvf -
 
-COPY ./forgejo ${GOPATH}/src/code.gitea.io/gitea
+COPY forgejo ${GOPATH}/src/code.gitea.io/gitea
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
 RUN make clean
