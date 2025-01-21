@@ -1,12 +1,12 @@
 FROM quay.io/fedora/fedora:rawhide
 
-RUN dnf install -y git-core wget nodejs npm golang && dnf clean all
+RUN dnf install -y git-core wget llvm17 llvm17-libs clang17 clang17-libs g++ gcc nodejs npm golang && dnf clean all
 
 
 ARG GOPROXY
 ENV GOPROXY=${GOPROXY:-direct}
 ARG GOPATH
-ENV GOPATH=""
+ENV GOPATH="/home/go/"
 
 ARG RELEASE_VERSION
 ENV TAGS="bindata timetzdata $TAGS"
@@ -30,16 +30,14 @@ RUN mkdir -p ${GOPATH}/src/code.gitea.io/gitea
 
 ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
 
-RUN tar -xvzf ${GOPATH}/forgejo.tar.gz -C ${GOPATH}/src/code.gitea.io/gitea/ --strip-components=1
+RUN tar -xzf ${GOPATH}/forgejo.tar.gz -C ${GOPATH}/src/code.gitea.io/gitea/ --strip-components=1
 
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
-RUN ls -la
-
 RUN make clean
 RUN make frontend
-RUN go build contrib/environment-to-ini/environment-to-ini.go && xx-verify environment-to-ini
-RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable && xx-verify gitea
+RUN go build contrib/environment-to-ini/environment-to-ini.go && 10-verify environment-to-ini
+RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable && 10-verify gitea
 
 # Copy local files
 COPY docker/rootless /tmp/local
