@@ -74,3 +74,4 @@ WORKDIR /var/lib/gitea
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--", "/usr/local/bin/docker-entrypoint.sh"]
 CMD []
+
