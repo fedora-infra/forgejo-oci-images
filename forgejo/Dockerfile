@@ -36,8 +36,8 @@ WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
 RUN make clean
 RUN make frontend
-RUN go build contrib/environment-to-ini/environment-to-ini.go && 10-verify environment-to-ini
-RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable && 10-verify gitea
+RUN go build contrib/environment-to-ini/environment-to-ini.go
+RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
 
 # Copy local files
 COPY docker/rootless /tmp/local
