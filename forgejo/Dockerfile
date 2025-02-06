@@ -1,6 +1,6 @@
 FROM quay.io/fedora/fedora:rawhide
 
-RUN dnf install -y git-core wget llvm17 llvm17-libs clang17 clang17-libs g++ gcc nodejs npm golang && dnf clean all
+RUN dnf install -y git-core wget llvm17 llvm17-libs clang17 clang17-libs g++ gcc nodejs18 npm golang && dnf clean all
 
 
 ARG GOPROXY
