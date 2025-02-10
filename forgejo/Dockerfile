@@ -1,6 +1,6 @@
-FROM quay.io/fedora/fedora:rawhide
+FROM quay.io/fedora/fedora:rawhide as build-env
 
-RUN dnf install -y git-core wget llvm17 llvm17-libs clang17 clang17-libs g++ gcc nodejs18 npm golang && dnf clean all
+RUN dnf install -y go nodejs glibc-static  && dnf clean all
 
 
 ARG GOPROXY
@@ -14,27 +14,14 @@ ARG CGO_EXTRA_CFLAGS
 
 ENV CGO_ENABLED=1
 
-
-LABEL maintainer="codeberg@fedoraproject.org" \
-      org.opencontainers.image.authors="Forgejo on Fedora" \
-      org.opencontainers.image.url="https://forgejo.fedoraproject.org" \
-      org.opencontainers.image.documentation="https://codeberg.org/fedora/oci-image-definitions" \
-      org.opencontainers.image.source="https://codeberg.org/fedora/oci-image-definitions" \
-      org.opencontainers.image.version="${RELEASE_VERSION}" \
-      org.opencontainers.image.vendor="Forgejo" \
-      org.opencontainers.image.licenses="GPL-3.0-or-later" \
-      org.opencontainers.image.title="Forgejo. Beyond coding. We forge." \
-      org.opencontainers.image.description="Forgejo for distgit"
-
 RUN mkdir -p ${GOPATH}/src/code.gitea.io/gitea
 
-ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
+#ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
 
-RUN tar -xzf ${GOPATH}/forgejo.tar.gz -C ${GOPATH}/src/code.gitea.io/gitea/ --strip-components=1
-
+ADD https://codeberg.org/fedora/forgejo.git ${GOPATH}/src/code.gitea.io/gitea
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
-RUN make clean
+#RUN make clean
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go
 RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
@@ -47,19 +34,54 @@ COPY docker/rootless /tmp/local
 RUN chmod 755 /tmp/local/usr/local/bin/docker-entrypoint.sh \
               /tmp/local/usr/local/bin/docker-setup.sh \
               /tmp/local/usr/local/bin/gitea \
-              /go/src/code.gitea.io/gitea/gitea \
-              /go/src/code.gitea.io/gitea/environment-to-ini
-RUN chmod 644 /go/src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete
+              /${GOPATH}/src/code.gitea.io/gitea/gitea \
+              /${GOPATH}/src/code.gitea.io/gitea/environment-to-ini
+RUN chmod 644 /${GOPATH}/src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete
+
+FROM quay.io/fedora/fedora:rawhide
+
+LABEL maintainer="codeberg@fedoraproject.org" \
+      org.opencontainers.image.authors="Forgejo on Fedora" \
+      org.opencontainers.image.url="https://forgejo.fedoraproject.org" \
+      org.opencontainers.image.documentation="https://codeberg.org/fedora/oci-image-definitions" \
+      org.opencontainers.image.source="https://codeberg.org/fedora/oci-image-definitions" \
+      org.opencontainers.image.version="${RELEASE_VERSION}" \
+      org.opencontainers.image.vendor="Forgejo" \
+      org.opencontainers.image.licenses="GPL-3.0-or-later" \
+      org.opencontainers.image.title="Forgejo. Beyond coding. We forge." \
+      org.opencontainers.image.description="Forgejo for distgit"
+
+EXPOSE 2222 3000
+
+RUN dnf install -y \
+    bash \
+    ca-certificates \
+    dumb-init \
+    gettext \
+    git \
+    curl \
+    gnupg
+
+RUN groupadd \
+    -r -g 1000 \
+    git && \
+  useradd \
+    -r -M \
+    -d /var/lib/gitea/git \
+    -s /bin/bash \
+    -u 1000 \
+    -g git \
+    git
 
 RUN mkdir -p /var/lib/gitea /etc/gitea
 RUN chown git:git /var/lib/gitea /etc/gitea
 
 COPY --from=build-env /tmp/local /
 RUN cd /usr/local/bin ; ln -s gitea forgejo
-COPY --from=build-env --chown=root:root /go/src/code.gitea.io/gitea/gitea /app/gitea/gitea
+COPY --from=build-env --chown=root:root /home/go/src/code.gitea.io/gitea/gitea /app/gitea/gitea
 RUN ln -s /app/gitea/gitea /app/gitea/forgejo-cli
-COPY --from=build-env --chown=root:root /go/src/code.gitea.io/gitea/environment-to-ini /usr/local/bin/environment-to-ini
-COPY --from=build-env /go/src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete /etc/profile.d/gitea_bash_autocomplete.sh
+COPY --from=build-env --chown=root:root /home/go/src/code.gitea.io/gitea/environment-to-ini /usr/local/bin/environment-to-ini
+COPY --from=build-env /home/go/src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete /etc/profile.d/gitea_bash_autocomplete.sh
 
 #git:git
 USER 1000:1000
