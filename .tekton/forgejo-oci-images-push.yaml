@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   annotations:
-    build.appstudio.openshift.io/repo: https://github.com/fedora-infra/forgejo-deployment-images?rev={{revision}}
+    build.appstudio.openshift.io/repo: https://github.com/fedora-infra/forgejo-oci-images?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
@@ -11,9 +11,9 @@ metadata:
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: forgejo
-    appstudio.openshift.io/component: forgejo-deployment-images
+    appstudio.openshift.io/component: forgejo-oci-images
     pipelines.appstudio.openshift.io/type: build
-  name: forgejo-deployment-images-on-push
+  name: forgejo-oci-images-on-push
   namespace: fedora-infra-tenant
 spec:
   params:
@@ -22,7 +22,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-deployment-images:{{revision}}
+    value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images:{{revision}}
   - name: dockerfile
     value: forgejo/Dockerfile
   pipelineSpec:
