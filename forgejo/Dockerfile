@@ -22,7 +22,7 @@ ADD https://codeberg.org/fedora/forgejo.git ${GOPATH}/src/code.gitea.io/gitea
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
 RUN pwd
-
+RUN ls
 #RUN make clean
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go
