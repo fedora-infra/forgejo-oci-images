@@ -18,8 +18,8 @@ RUN mkdir -p ${GOPATH}/src/code.gitea.io/gitea
 
 #ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
 
-ADD https://codeberg.org/fedora/forgejo.git ${GOPATH}/src/code.gitea.io/gitea
-WORKDIR ${GOPATH}/src/code.gitea.io/gitea/forgejo
+RUN git clone https://codeberg.org/fedora/forgejo.git ${GOPATH}/src/code.gitea.io/gitea
+WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
 RUN pwd
 RUN ls
