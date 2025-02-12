@@ -21,6 +21,8 @@ RUN mkdir -p ${GOPATH}/src/code.gitea.io/gitea
 ADD https://codeberg.org/fedora/forgejo.git ${GOPATH}/src/code.gitea.io/gitea
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 
+RUN pwd
+
 #RUN make clean
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go
