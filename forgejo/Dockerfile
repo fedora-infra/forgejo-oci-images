@@ -29,7 +29,7 @@ RUN go build contrib/environment-to-ini/environment-to-ini.go
 RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
 
 # Copy local files
-RUN cp docker/rootless /tmp/local
+RUN cp -r docker/rootless /tmp/local
 
 
 # Set permissions
