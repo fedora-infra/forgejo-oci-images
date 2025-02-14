@@ -14,12 +14,12 @@ ARG CGO_EXTRA_CFLAGS
 
 ENV CGO_ENABLED=1
 
-RUN mkdir -p ${GOPATH}/src/code.gitea.io/gitea
+RUN mkdir -p ${GOPATH}src/code.gitea.io/gitea
 
 #ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
 
-RUN git clone https://codeberg.org/fedora/forgejo.git ${GOPATH}/src/code.gitea.io/gitea
-WORKDIR ${GOPATH}/src/code.gitea.io/gitea
+RUN git clone https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
+WORKDIR ${GOPATH}src/code.gitea.io/gitea
 
 RUN pwd
 RUN ls
@@ -36,9 +36,9 @@ RUN cp -r docker/rootless /tmp/local
 RUN chmod 755 /tmp/local/usr/local/bin/docker-entrypoint.sh \
               /tmp/local/usr/local/bin/docker-setup.sh \
               /tmp/local/usr/local/bin/gitea \
-              /${GOPATH}/src/code.gitea.io/gitea/gitea \
-              /${GOPATH}/src/code.gitea.io/gitea/environment-to-ini
-RUN chmod 644 /${GOPATH}/src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete
+              /${GOPATH}src/code.gitea.io/gitea/gitea \
+              /${GOPATH}src/code.gitea.io/gitea/environment-to-ini
+RUN chmod 644 /${GOPATH}src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete
 
 FROM quay.io/fedora/fedora:rawhide
 
