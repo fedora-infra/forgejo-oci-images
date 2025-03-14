@@ -62,7 +62,8 @@ RUN dnf install -y \
     gettext \
     git \
     curl \
-    gnupg
+    gnupg \
+    awk
 
 RUN groupadd \
     -r -g 1000 \
@@ -75,8 +76,8 @@ RUN groupadd \
     -g git \
     git
 
-RUN mkdir -p /var/lib/gitea /etc/gitea
-RUN chown git:git /var/lib/gitea /etc/gitea
+RUN mkdir -p /var/lib/gitea /etc/gitea /usr/sbin
+RUN chown git:git /var/lib/gitea /etc/gitea /usr/sbin
 
 COPY --from=build-env /tmp/local /
 RUN cd /usr/local/bin ; ln -s gitea forgejo
