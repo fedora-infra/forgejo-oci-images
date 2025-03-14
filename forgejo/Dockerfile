@@ -64,7 +64,7 @@ RUN dnf install -y \
     curl \
     gnupg \
     awk \
-    nc
+    nmap-ncat
 
 RUN groupadd \
     -r -g 1000 \
