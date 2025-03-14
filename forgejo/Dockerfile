@@ -63,7 +63,8 @@ RUN dnf install -y \
     git \
     curl \
     gnupg \
-    awk
+    awk \
+    nc
 
 RUN groupadd \
     -r -g 1000 \
