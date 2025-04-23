@@ -1,6 +1,6 @@
 FROM quay.io/fedora/fedora:rawhide as build-env
 
-RUN dnf install -y go nodejs glibc-static  && dnf clean all
+RUN dnf install -y go nodejs glibc-static git  && dnf clean all
 
 
 ARG GOPROXY
@@ -18,7 +18,7 @@ RUN mkdir -p ${GOPATH}src/code.gitea.io/gitea
 
 #ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
 
-RUN git clone https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
+RUN git clone --depth 1 --branch v11.0/forgejo https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
 WORKDIR ${GOPATH}src/code.gitea.io/gitea
 
 RUN pwd
