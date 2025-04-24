@@ -1,6 +1,6 @@
-FROM quay.io/fedora/fedora:rawhide as build-env
+FROM quay.io/fedora/fedora:42 as build-env
 
-RUN dnf install -y go nodejs glibc-static git && dnf clean all
+RUN dnf install -y go nodejs glibc-static git  && dnf clean all
 
 
 ARG GOPROXY
@@ -18,8 +18,8 @@ RUN mkdir -p ${GOPATH}src/code.gitea.io/gitea
 
 #ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
 
-RUN git clone --depth 1 --branch v11.0/forgejo https://codeberg.org/forgejo/forgejo.git ${GOPATH}src/code.gitea.io/gitea
-WORKDIR ${GOPATH}/src/code.gitea.io/gitea
+RUN git clone --depth 1 --branch v11.0/forgejo https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
+WORKDIR ${GOPATH}src/code.gitea.io/gitea
 
 RUN pwd
 RUN ls
@@ -40,7 +40,7 @@ RUN chmod 755 /tmp/local/usr/local/bin/docker-entrypoint.sh \
               /${GOPATH}src/code.gitea.io/gitea/environment-to-ini
 RUN chmod 644 /${GOPATH}src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete
 
-FROM quay.io/fedora/fedora:rawhide
+FROM quay.io/fedora/fedora:42
 
 LABEL maintainer="codeberg@fedoraproject.org" \
       org.opencontainers.image.authors="Forgejo on Fedora" \
@@ -62,7 +62,9 @@ RUN dnf install -y \
     gettext \
     git \
     curl \
-    gnupg
+    gnupg \
+    awk \
+    nmap-ncat
 
 RUN groupadd \
     -r -g 1000 \
@@ -75,8 +77,8 @@ RUN groupadd \
     -g git \
     git
 
-RUN mkdir -p /var/lib/gitea /etc/gitea
-RUN chown git:git /var/lib/gitea /etc/gitea
+RUN mkdir -p /var/lib/gitea /etc/gitea /usr/sbin
+RUN chown git:git /var/lib/gitea /etc/gitea /usr/sbin
 
 COPY --from=build-env /tmp/local /
 RUN cd /usr/local/bin ; ln -s gitea forgejo
