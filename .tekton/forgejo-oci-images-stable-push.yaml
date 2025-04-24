@@ -11,9 +11,9 @@ metadata:
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: forgejo-oci-images
-    appstudio.openshift.io/component: forgejo-oci-images
+    appstudio.openshift.io/component: forgejo-oci-images-stable
     pipelines.appstudio.openshift.io/type: build
-  name: forgejo-oci-images-on-push
+  name: forgejo-oci-images-stable-on-push
   namespace: fedora-infra-tenant
 spec:
   params:
@@ -22,7 +22,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images:{{revision}}
+    value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images-stable:{{revision}}
   - name: dockerfile
     value: /forgejo/Dockerfile.stable
   pipelineSpec:
