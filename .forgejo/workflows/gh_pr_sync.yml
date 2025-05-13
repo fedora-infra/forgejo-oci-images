@@ -1,0 +1,17 @@
+name: gh_pr_sync
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '@daily'
+
+jobs:
+  branch_sync:
+    runs-on: codeberg-tiny
+    container:
+      image: 'data.forgejo.org/oci/node:20-bookworm'
+    steps:
+      - name: synchronize opened pull requests from Konflux
+        run: |
+          echo "Hello action"
