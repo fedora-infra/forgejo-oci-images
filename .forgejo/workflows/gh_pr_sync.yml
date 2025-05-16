@@ -22,3 +22,4 @@ jobs:
       - name: Fetch the PR as patch and apply
         run: |
           echo "The GH patch URL is: ${{ env.PATCH_URL }}"
+
