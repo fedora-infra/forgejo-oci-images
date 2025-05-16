@@ -14,11 +14,11 @@ jobs:
     steps:
       - name: Get URL of the patch from latest GitHub PR
         run: |
-          echo "PATCH_URL=$(curl -L \
+          echo "::set-output name=patch_url::$(curl -L \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GH_PR_SYNC_TOKEN }} " \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/fedora-infra/forgejo-oci-images/pulls > output.json && node -p "JSON.parse(require('fs').readFileSync('output.json'))[0].patch_url")"
       - name: Fetch the PR as patch and apply
         run: |
-          echo "The GH patch URL is: ${{ env.PATCH_URL }}"
+          echo "The GH patch URL is: ${{ steps.set-variable.outputs.patch_url }}"
