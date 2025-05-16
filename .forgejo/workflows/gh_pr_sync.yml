@@ -14,8 +14,8 @@ jobs:
     steps:
       - name: Set git identity
         run: |
-          git config user.name "konflux-gh-forgejo-sync"
-          git config user.email "konflux-gh-forgejo-sync@noarealdomain.org"
+          git config --global user.name "konflux-gh-forgejo-sync"
+          git config --global user.email "konflux-gh-forgejo-sync@noarealdomain.org"
 
       - name: Get URL of the patch from latest GitHub PR
         run: |
