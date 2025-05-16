@@ -12,6 +12,11 @@ jobs:
     container:
       image: 'data.forgejo.org/oci/node:20-bookworm'
     steps:
+      - name: Set git identity
+        run: |
+          git config user.name "konflux-gh-forgejo-sync"
+          git config user.email "konflux-gh-forgejo-sync@noarealdomain.org"
+
       - name: Get URL of the patch from latest GitHub PR
         run: |
           echo "PATCH_URL=$(curl -L \
