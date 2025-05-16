@@ -21,5 +21,8 @@ jobs:
             https://api.github.com/repos/fedora-infra/forgejo-oci-images/pulls > output.json && node -p "JSON.parse(require('fs').readFileSync('output.json'))[0].patch_url")" >> $GITHUB_ENV 
       - name: Fetch the PR as patch and apply
         run: |
-          echo "The GH patch URL is: ${{ env.PATCH_URL }}"
+          echo "The GH patch URL is: ${{ env.PATCH_URL }}" && \
+          git clone -b main https://${{secrets.FORGEJO_GIT_TOKEN}@codeberg.org/fedora/oci-image-definitions.git} && cd oci-image-definitions && \
+          curl -s ${{ env.PATCH_URL }} | git am && \
+          git push 
 
