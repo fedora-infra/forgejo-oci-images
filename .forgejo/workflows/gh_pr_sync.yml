@@ -7,7 +7,7 @@ on:
     - cron: '@daily'
 
 jobs:
-  branch_sync:
+  gh_pr_sync:
     runs-on: codeberg-tiny
     container:
       image: 'data.forgejo.org/oci/node:20-bookworm'
