@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:42 as build-env
+FROM quay.io/fedora/fedora:43 as build-env
 
 RUN dnf install -y go nodejs glibc-static git  && dnf clean all
 
@@ -40,7 +40,7 @@ RUN chmod 755 /tmp/local/usr/local/bin/docker-entrypoint.sh \
               /${GOPATH}src/code.gitea.io/gitea/environment-to-ini
 RUN chmod 644 /${GOPATH}src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete
 
-FROM quay.io/fedora/fedora:42
+FROM quay.io/fedora/fedora:43
 
 LABEL maintainer="codeberg@fedoraproject.org" \
       org.opencontainers.image.authors="Forgejo on Fedora" \
