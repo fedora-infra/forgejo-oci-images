@@ -4,17 +4,16 @@ metadata:
   annotations:
     build.appstudio.openshift.io/repo: https://github.com/fedora-infra/forgejo-oci-images?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
-    build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
       == "main"
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: forgejo-oci-images
     appstudio.openshift.io/component: forgejo-oci-images-main-stable
     pipelines.appstudio.openshift.io/type: build
-  name: forgejo-oci-images-main_stable-on-pull-request
+  name: forgejo-oci-images-main-stable-on-push
   namespace: fedora-infra-tenant
 spec:
   params:
@@ -23,9 +22,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images-main-stable:on-pr-{{revision}}
-  - name: image-expires-after
-    value: 5d
+    value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images-main-stable:{{revision}}
   - name: dockerfile
     value: /forgejo/Dockerfile.main_stable
   pipelineSpec:
@@ -405,6 +402,9 @@ spec:
       params:
       - name: IMAGE
         value: $(tasks.build-image-index.results.IMAGE_URL)
+      - name: ADDITIONAL_TAGS
+        value:
+        - latest
       runAfter:
       - build-image-index
       taskRef:
