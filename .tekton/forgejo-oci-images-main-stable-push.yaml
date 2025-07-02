@@ -404,7 +404,7 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: ADDITIONAL_TAGS
         value:
-        - latest
+        - latest-rootless
       runAfter:
       - build-image-index
       taskRef:
