@@ -20,9 +20,8 @@ RUN mkdir -p ${GOPATH}src/code.gitea.io/gitea
 
 RUN git clone --depth 1 --branch v12.0/forgejo https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
+RUN git tag "v12.0.0"
 
-RUN pwd
-RUN ls
 #RUN make clean
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go

@@ -16,14 +16,10 @@ ENV CGO_ENABLED=1
 
 RUN mkdir -p ${GOPATH}src/code.gitea.io/gitea
 
-#ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
-
 RUN git clone --depth 1 --branch main https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
 WORKDIR ${GOPATH}/src/code.gitea.io/gitea
-RUN git tag -l "v12.0.0"
+RUN git tag "v12.0.0"
 
-RUN pwd
-RUN ls
 #RUN make clean
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go
@@ -63,7 +59,9 @@ RUN dnf install -y \
     gettext \
     git \
     curl \
-    gnupg
+    gnupg \
+    awk \
+    nmap-ncat
 
 RUN groupadd \
     -r -g 1000 \
@@ -76,8 +74,8 @@ RUN groupadd \
     -g git \
     git
 
-RUN mkdir -p /var/lib/gitea /etc/gitea
-RUN chown git:git /var/lib/gitea /etc/gitea
+RUN mkdir -p /var/lib/gitea /etc/gitea /usr/sbin
+RUN chown git:git /var/lib/gitea /etc/gitea /usr/sbin
 
 COPY --from=build-env /tmp/local /
 RUN cd /usr/local/bin ; ln -s gitea forgejo

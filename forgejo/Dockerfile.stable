@@ -1,6 +1,6 @@
 FROM quay.io/fedora/fedora:42 as build-env
 
-RUN dnf install -y go nodejs glibc-static git  && dnf clean all
+RUN dnf install -y go nodejs glibc-static git && dnf clean all
 
 
 ARG GOPROXY
@@ -16,14 +16,11 @@ ENV CGO_ENABLED=1
 
 RUN mkdir -p ${GOPATH}src/code.gitea.io/gitea
 
-#ADD https://codeberg.org/forgejo/forgejo/archive/v10.0/forgejo.tar.gz ${GOPATH}/
 
 RUN git clone --depth 1 --branch v12.0/forgejo https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
-WORKDIR ${GOPATH}src/code.gitea.io/gitea
+WORKDIR ${GOPATH}/src/code.gitea.io/gitea
+RUN git tag "v12.0.0"
 
-RUN pwd
-RUN ls
-#RUN make clean
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go
 RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
