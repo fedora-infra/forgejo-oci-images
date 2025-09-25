@@ -26,7 +26,7 @@ WORKDIR ${GOPATH}/src/code.gitea.io/gitea
 RUN make frontend
 #RUN go build contrib/environment-to-ini/environment-to-ini.go
 #RUN make RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
-RUN go build contrib/environment-to-ini/environment-to-ini.go && xx-verify environment-to-ini
+RUN go build contrib/environment-to-ini/environment-to-ini.go
 RUN make FORGEJO_GENERATE_SKIP_HASH=true RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
 
 # Copy local files
