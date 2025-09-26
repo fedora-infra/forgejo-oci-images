@@ -4,7 +4,7 @@ RUN dnf install -y go nodejs glibc-static git && dnf clean all
 
 
 ARG GOPROXY
-ENV GOPROXY=${GOPROXY:-direct}
+ENV GOPROXY=${GOPROXY:-https://proxy.golang.org,direct}
 ARG GOPATH
 ENV GOPATH="/home/go/"
 
@@ -17,10 +17,10 @@ ARG CGO_EXTRA_CFLAGS
 
 ENV CGO_ENABLED=1
 
-RUN mkdir -p ${GOPATH}src/code.gitea.io/gitea
+RUN mkdir -p ${GOPATH}src/forgejo.org
 
-RUN git clone --depth 1 --branch main https://codeberg.org/fedora/forgejo.git ${GOPATH}src/code.gitea.io/gitea
-WORKDIR ${GOPATH}/src/code.gitea.io/gitea
+RUN git clone --depth 1 --branch main https://codeberg.org/fedora/forgejo.git ${GOPATH}src/forgejo.org
+WORKDIR ${GOPATH}/src/forgejo.org
 
 #RUN make clean
 RUN make frontend
@@ -37,9 +37,9 @@ RUN cp -r docker/rootless /tmp/local
 RUN chmod 755 /tmp/local/usr/local/bin/docker-entrypoint.sh \
               /tmp/local/usr/local/bin/docker-setup.sh \
               /tmp/local/usr/local/bin/gitea \
-              /${GOPATH}src/code.gitea.io/gitea/gitea \
-              /${GOPATH}src/code.gitea.io/gitea/environment-to-ini
-RUN chmod 644 /${GOPATH}src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete
+              /${GOPATH}src/forgejo.org/gitea \
+              /${GOPATH}src/forgejo.org/environment-to-ini
+RUN chmod 644 /${GOPATH}src/forgejo.org/contrib/autocompletion/bash_autocomplete
 
 FROM quay.io/fedora/fedora:42
 
@@ -83,10 +83,10 @@ RUN chown git:git /var/lib/gitea /etc/gitea /usr/sbin /data/git
 
 COPY --from=build-env /tmp/local /
 RUN cd /usr/local/bin ; ln -s gitea forgejo
-COPY --from=build-env --chown=root:root /home/go/src/code.gitea.io/gitea/gitea /app/gitea/gitea
+COPY --from=build-env --chown=root:root /home/go/src/forgejo.org/gitea /app/gitea/gitea
 RUN ln -s /app/gitea/gitea /app/gitea/forgejo-cli
-COPY --from=build-env --chown=root:root /home/go/src/code.gitea.io/gitea/environment-to-ini /usr/local/bin/environment-to-ini
-COPY --from=build-env /home/go/src/code.gitea.io/gitea/contrib/autocompletion/bash_autocomplete /etc/profile.d/gitea_bash_autocomplete.sh
+COPY --from=build-env --chown=root:root /home/go/src/forgejo.org/environment-to-ini /usr/local/bin/environment-to-ini
+COPY --from=build-env /home/go/src/forgejo.org/contrib/autocompletion/bash_autocomplete /etc/profile.d/gitea_bash_autocomplete.sh
 
 #git:git
 USER 1000:1000
