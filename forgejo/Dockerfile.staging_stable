@@ -24,7 +24,7 @@ WORKDIR ${GOPATH}/src/forgejo.org
 RUN make clean-no-bindata
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go
-RUN make FORGEJO_GENERATE_SKIP_HASH=true VERSION=$RELEASE_VERSION go-check generate-backend static-executable
+RUN make FORGEJO_GENERATE_SKIP_HASH=true RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
 
 # Copy local files
 RUN cp -r docker/rootless /tmp/local
