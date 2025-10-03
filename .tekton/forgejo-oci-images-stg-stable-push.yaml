@@ -26,6 +26,8 @@ spec:
     value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images-stg-stable:{{revision}}
   - name: dockerfile
     value: /forgejo/Dockerfile.staging_stable
+  - build-args-file:
+    value: build-args
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
