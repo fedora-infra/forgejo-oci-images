@@ -538,7 +538,7 @@ spec:
         value: |
           #!/bin/bash
           set -e
-          VERSION=$(cat VERSION | tr -d '\n\r')
+          VERSION=$(cat /var/workdir/source/VERSION | tr -d '\n\r')
           echo -n "v$VERSION" | tee "$SCRIPT_OUTPUT"
       runAfter:
       - prefetch-dependencies
