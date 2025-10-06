@@ -25,7 +25,9 @@ spec:
   - name: output-image
     value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images-prod-rawhide:{{revision}}
   - name: dockerfile
-    value: /forgejo/production/Dockerfile.prod_rawhide
+    value: Dockerfile.prod_rawhide
+  - name: path-context
+    value: /forgejo/production
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
