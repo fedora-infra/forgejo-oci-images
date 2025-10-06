@@ -555,7 +555,7 @@ spec:
       params:
       - name: ADDITIONAL_TAGS
         value:
-        - $(tasks.read-version.results.SCRIPT_OUTPUT)-rootless
+        - $(tasks.read-version.results.SCRIPT_OUTPUT)
       - name: IMAGE_URL
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
