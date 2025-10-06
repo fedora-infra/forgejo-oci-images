@@ -526,17 +526,44 @@ spec:
         operator: in
         values:
         - "false"
+    - name: read-version
+      params:
+      - name: SOURCE_ARTIFACT
+        value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
+      runAfter:
+      - prefetch-dependencies
+      taskRef:
+        params:
+        - name: name
+          value: shell-script-oci-ta
+        - name: bundle
+          value: quay.io/konflux-ci/tekton-catalog/task-shell-script-oci-ta:0.1@sha256:example
+        - name: kind
+          value: task
+        resolver: bundles
+      workspaces:
+      - name: source
+        workspace: source
+      results:
+      - name: VERSION_CONTENT
+        description: "The content of the VERSION file"
+      script: |
+        #!/bin/bash
+        set -e
+        VERSION=$(cat VERSION | tr -d '\n\r')
+        echo "$VERSION" > $(results.VERSION_CONTENT.path)
     - name: apply-tags
       params:
       - name: ADDITIONAL_TAGS
         value:
-        - latest-rootless
+        - $(tasks.read-version.results.VERSION_CONTENT)-rootless
       - name: IMAGE_URL
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
       runAfter:
       - build-image-index
+      - read-version
       taskRef:
         params:
         - name: name
