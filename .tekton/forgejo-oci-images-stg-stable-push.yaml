@@ -532,6 +532,8 @@ spec:
         value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
       - name: SCRIPT_RUNNER_IMAGE
         value: quay.io/fedora/fedora-minimal:42
+      - name: ociStorage
+        value: $(params.output-image).script
       - name: SCRIPT
         value: |
           #!/bin/bash
