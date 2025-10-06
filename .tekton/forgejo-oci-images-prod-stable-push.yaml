@@ -25,7 +25,7 @@ spec:
   - name: output-image
     value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images-prod-stable:{{revision}}
   - name: dockerfile
-    value: /forgejo/Dockerfile.prod_stable
+    value: /forgejo/production/Dockerfile.prod_stable
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.

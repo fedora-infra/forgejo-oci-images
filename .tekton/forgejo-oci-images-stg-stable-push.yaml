@@ -25,7 +25,7 @@ spec:
   - name: output-image
     value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-oci-images-stg-stable:{{revision}}
   - name: dockerfile
-    value: /forgejo/Dockerfile.staging_stable
+    value: /forgejo/staging/Dockerfile.staging_stable
   - name: build-args-file
     value: build-args
   pipelineSpec:
