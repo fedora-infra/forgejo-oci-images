@@ -551,7 +551,7 @@ spec:
         #!/bin/bash
         set -e
         VERSION=$(cat VERSION | tr -d '\n\r')
-        echo "$VERSION" > $(results.VERSION_CONTENT.path)
+        echo "v$VERSION" > $(results.VERSION_CONTENT.path)
     - name: apply-tags
       params:
       - name: ADDITIONAL_TAGS
