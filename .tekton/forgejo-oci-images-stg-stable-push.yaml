@@ -530,14 +530,14 @@ spec:
       params:
       - name: SOURCE_ARTIFACT
         value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
+      - name: SCRIPT_RUNNER_IMAGE
+        value: quay.io/fedora/fedora-minimal:42
       - name: SCRIPT
         value: |
           #!/bin/bash
           set -e
           VERSION=$(cat VERSION | tr -d '\n\r')
-          echo -n "v$VERSION" | tee $(results.VERSION_CONTENT.path)
-      - name: RESULT_NAME
-        value: VERSION_CONTENT
+          echo -n "v$VERSION" | tee "$SCRIPT_OUTPUT"
       runAfter:
       - prefetch-dependencies
       taskRef:
@@ -553,7 +553,7 @@ spec:
       params:
       - name: ADDITIONAL_TAGS
         value:
-        - $(tasks.read-version.results.VERSION_CONTENT)-rootless
+        - $(tasks.read-version.results.SCRIPT_OUTPUT)-rootless
       - name: IMAGE_URL
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
