@@ -538,8 +538,6 @@ spec:
         value: |
           #!/bin/bash
           set -e
-          echo ls
-          echo ls /var/workdir/source
           VERSION=$(cat /var/workdir/source/forgejo/staging/VERSION | tr -d '\n\r')
           echo -n "v$VERSION" | tee "$SCRIPT_OUTPUT"
       runAfter:

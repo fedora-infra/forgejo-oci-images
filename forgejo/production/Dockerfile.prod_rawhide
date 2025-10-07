@@ -9,11 +9,6 @@ ARG GOPATH
 ENV GOPATH="/home/go/"
 
 ARG RELEASE_VERSION
-ENV RELEASE_VERSION=12.0.4
-ARG VERSION
-ENV VERSION=12.0.4
-ARG FORGEJO_RELEASE
-ENV FORGEJO_RELEASE=12.0.4
 
 ARG TAGS="sqlite sqlite_unlock_notify"
 ENV TAGS="bindata timetzdata $TAGS"
@@ -25,6 +20,8 @@ RUN mkdir -p ${GOPATH}src/forgejo.org
 
 RUN git clone --depth 1 --branch production https://codeberg.org/fedora/forgejo.git ${GOPATH}src/forgejo.org
 WORKDIR ${GOPATH}/src/forgejo.org
+
+COPY VERSION .
 
 RUN make clean-no-bindata
 RUN make frontend
