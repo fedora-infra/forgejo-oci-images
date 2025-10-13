@@ -1,5 +1,7 @@
 FROM quay.io/fedora/fedora:42 as build-env
 
+RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/x86_64/golang-1.24.7-1.fc42.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/x86_64/golang-bin-1.24.7-1.fc42.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/noarch/golang-src-1.24.7-1.fc42.noarch.rpm
+
 RUN dnf install -y go nodejs glibc-static git && dnf clean all
 
 
