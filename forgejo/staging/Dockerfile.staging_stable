@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:42 as build-env
+FROM quay.io/fedora/fedora:43 as build-env
 
 RUN dnf install -y go nodejs glibc-static git && dnf clean all
 
