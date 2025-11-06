@@ -1,6 +1,4 @@
-FROM quay.io/fedora/fedora:42 as build-env
-
-RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/x86_64/golang-1.24.7-1.fc42.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/x86_64/golang-bin-1.24.7-1.fc42.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/noarch/golang-src-1.24.7-1.fc42.noarch.rpm
+FROM quay.io/fedora/fedora:43 as build-env
 
 RUN dnf install -y go nodejs glibc-static git && dnf clean all
 
@@ -28,7 +26,7 @@ COPY VERSION .
 RUN make clean-no-bindata
 RUN make frontend
 RUN go build contrib/environment-to-ini/environment-to-ini.go
-RUN make FORGEJO_RELEASE=$FORGEJO_RELEASE VERSION=$VERSION FORGEJO_GENERATE_SKIP_HASH=true RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
+RUN make FORGEJO_GENERATE_SKIP_HASH=true RELEASE_VERSION=$RELEASE_VERSION go-check generate-backend static-executable
 
 # Copy local files
 RUN cp -r docker/rootless /tmp/local
@@ -66,7 +64,8 @@ RUN dnf install -y \
     curl \
     gnupg \
     awk \
-    nmap-ncat
+    nmap-ncat \
+    asciidoctor
 
 RUN groupadd \
     -r -g 1000 \
