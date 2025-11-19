@@ -22,28 +22,52 @@ jobs:
           git config --global user.name "konflux-gh-forgejo-sync"
           git config --global user.email "konflux-gh-forgejo-sync@noarealdomain.org"
 
-      - name: Get patch URL from PR event
+      - name: Push PR branch to Codeberg
         run: |
-          echo "PATCH_URL=${{ github.event.pull_request.patch_url }}" >> $GITHUB_ENV
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+          echo "Processing GitHub PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+          echo "PR branch: ${{ github.event.pull_request.head.ref }}"
+          echo "PR head SHA: ${{ github.event.pull_request.head.sha }}"
 
-      - name: Fetch the PR as patch and apply to Codeberg
+          # Clone the Codeberg repo
+          git clone https://${{ secrets.FORGEJO_GIT_TOKEN }}@codeberg.org/fedora/oci-image-definitions.git
+          cd oci-image-definitions
+
+          # Add GitHub as a remote and fetch the PR branch
+          git remote add github https://github.com/fedora-infra/forgejo-oci-images.git
+          git fetch github ${{ github.event.pull_request.head.ref }}
+
+          # Create a new branch for the PR
+          git checkout -b ${{ github.event.pull_request.head.ref }} FETCH_HEAD
+
+          # Push the branch to Codeberg
+          echo "Pushing branch to Codeberg"
+          git push origin ${{ github.event.pull_request.head.ref }} --force
+      - name: Create PR on Codeberg
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          if [ -z "${{ env.PATCH_URL }}" ]; then
-            echo "No PR patch URL found"
-            exit 1
-          else
-            echo "Processing GitHub PR #${{ env.PR_NUMBER }}: ${{ env.PR_TITLE }}"
-            echo "Patch URL: ${{ env.PATCH_URL }}"
-            
-            git clone -b main https://${{ secrets.FORGEJO_GIT_TOKEN }}@codeberg.org/fedora/oci-image-definitions.git
-            cd oci-image-definitions
-            
-            echo "Applying patch from GitHub PR #${{ env.PR_NUMBER }}"
-            curl -L ${{ env.PATCH_URL }} | git am
-            
-            echo "Pushing to Codeberg"
-            git push 
-          fi
+          # Create JSON payload with proper escaping
+          jq -n \
+            --arg title "$PR_TITLE" \
+            --arg head "$PR_BRANCH" \
+            --arg base "main" \
+            --arg body "Synced from GitHub PR #$PR_NUMBER
+
+Original PR: $PR_URL
+
+---
+
+$PR_BODY" \
+            '{title: $title, head: $head, base: $base, body: $body}' > pr_payload.json
+
+          # Create PR using Forgejo API
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.FORGEJO_GIT_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            https://codeberg.org/api/v1/repos/fedora/oci-image-definitions/pulls \
+            -d @pr_payload.json
 
