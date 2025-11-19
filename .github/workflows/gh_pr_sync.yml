@@ -50,18 +50,21 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
+          # Create the PR body with proper formatting
+          PR_DESCRIPTION="Synced from GitHub PR #${PR_NUMBER}
+
+Original PR: ${PR_URL}
+
+---
+
+${PR_BODY}"
+
           # Create JSON payload with proper escaping
           jq -n \
             --arg title "$PR_TITLE" \
             --arg head "$PR_BRANCH" \
             --arg base "main" \
-            --arg body "Synced from GitHub PR #$PR_NUMBER
-
-Original PR: $PR_URL
-
----
-
-$PR_BODY" \
+            --arg body "$PR_DESCRIPTION" \
             '{title: $title, head: $head, base: $base, body: $body}' > pr_payload.json
 
           # Create PR using Forgejo API
