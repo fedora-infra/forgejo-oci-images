@@ -1,0 +1,16 @@
+name: hello
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print hello
+        run: |
+          echo "PR opened by: ${{ github.event.pull_request.user.login }}"
+          echo "this is the user.login: ${{ github.event.pull_request.user.login }}"
