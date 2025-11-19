@@ -1,0 +1,49 @@
+name: gh_pr_sync
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  gh_pr_sync:
+    runs-on: ubuntu-latest
+    # Only sync PRs from the konflux-fedora bot
+    if: github.event.pull_request.user.login == 'app/konflux-fedora' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Verify PR author
+        run: |
+          echo "PR opened by: ${{ github.event.pull_request.user.login }}"
+          echo "This workflow only processes PRs from konflux-fedora bot"
+
+      - name: Set git identity
+        run: |
+          git config --global user.name "konflux-gh-forgejo-sync"
+          git config --global user.email "konflux-gh-forgejo-sync@noarealdomain.org"
+
+      - name: Get patch URL from PR event
+        run: |
+          echo "PATCH_URL=${{ github.event.pull_request.patch_url }}" >> $GITHUB_ENV
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+
+      - name: Fetch the PR as patch and apply to Codeberg
+        run: |
+          if [ -z "${{ env.PATCH_URL }}" ]; then
+            echo "No PR patch URL found"
+            exit 1
+          else
+            echo "Processing GitHub PR #${{ env.PR_NUMBER }}: ${{ env.PR_TITLE }}"
+            echo "Patch URL: ${{ env.PATCH_URL }}"
+            
+            git clone -b main https://${{ secrets.FORGEJO_GIT_TOKEN }}@codeberg.org/fedora/oci-image-definitions.git
+            cd oci-image-definitions
+            
+            echo "Applying patch from GitHub PR #${{ env.PR_NUMBER }}"
+            curl -L ${{ env.PATCH_URL }} | git am
+            
+            echo "Pushing to Codeberg"
+            git push 
+          fi
+
