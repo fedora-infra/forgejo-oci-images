@@ -10,7 +10,7 @@ jobs:
   gh_pr_sync:
     runs-on: ubuntu-latest
     # Only sync PRs from the konflux-fedora bot
-    if: github.event.pull_request.user.login == 'app/konflux-fedora' || github.event_name == 'workflow_dispatch'
+    if: github.event.pull_request.user.login == 'konflux-fedora[bot]' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Verify PR author
         run: |
