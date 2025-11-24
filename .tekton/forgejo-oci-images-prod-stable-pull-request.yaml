@@ -28,7 +28,9 @@ spec:
   - name: image-expires-after
     value: 5d
   - name: dockerfile
-    value: /forgejo/Dockerfile.prod_stable
+    value: Dockerfile.prod_stable
+  - name: path-context
+    value: /forgejo/production
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
@@ -527,14 +529,43 @@ spec:
         operator: in
         values:
         - "false"
+    - name: read-version
+      params:
+      - name: SOURCE_ARTIFACT
+        value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
+      - name: SCRIPT_RUNNER_IMAGE
+        value: quay.io/fedora/fedora-minimal:42
+      - name: ociStorage
+        value: $(params.output-image).script
+      - name: SCRIPT
+        value: |
+          #!/bin/bash
+          set -e
+          VERSION=$(cat /var/workdir/source/forgejo/production/VERSION | tr -d '\n\r')
+          echo -n "v$VERSION" | tee "$SCRIPT_OUTPUT"
+      runAfter:
+      - prefetch-dependencies
+      taskRef:
+        params:
+        - name: name
+          value: run-script-oci-ta
+        - name: bundle
+          value: quay.io/konflux-ci/tekton-catalog/task-run-script-oci-ta:0.1@sha256:834a934f1e631a79aea7f2d001162cf90086e664e648c8ca15b69ad9798571ee
+        - name: kind
+          value: task
+        resolver: bundles
     - name: apply-tags
       params:
+      - name: ADDITIONAL_TAGS
+        value:
+        - $(tasks.read-version.results.SCRIPT_OUTPUT)
       - name: IMAGE_URL
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
       runAfter:
       - build-image-index
+      - read-version
       taskRef:
         params:
         - name: name
