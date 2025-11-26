@@ -27,14 +27,15 @@ jobs:
           echo "Processing GitHub PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
           echo "PR branch: ${{ github.event.pull_request.head.ref }}"
           echo "PR head SHA: ${{ github.event.pull_request.head.sha }}"
+          echo "PR head repo: ${{ github.event.pull_request.head.repo.clone_url }}"
 
           # Clone the Codeberg repo
           git clone https://${{ secrets.FORGEJO_GIT_TOKEN }}@codeberg.org/fedora/oci-image-definitions.git
           cd oci-image-definitions
 
-          # Add GitHub as a remote and fetch the PR branch
-          git remote add github https://github.com/fedora-infra/forgejo-oci-images.git
-          git fetch github ${{ github.event.pull_request.head.ref }}
+          # Add the PR's fork as a remote and fetch the PR branch
+          git remote add pr-fork ${{ github.event.pull_request.head.repo.clone_url }}
+          git fetch pr-fork ${{ github.event.pull_request.head.ref }}
 
           # Create a new branch for the PR
           git checkout -b ${{ github.event.pull_request.head.ref }} FETCH_HEAD
