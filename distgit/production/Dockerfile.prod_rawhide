@@ -1,4 +1,6 @@
-FROM quay.io/fedora/fedora:42 as build-env
+FROM quay.io/fedora/fedora:rawhide as build-env
+
+RUN dnf install -y https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/x86_64/golang-1.24.7-1.fc42.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/x86_64/golang-bin-1.24.7-1.fc42.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/golang/1.24.7/1.fc42/noarch/golang-src-1.24.7-1.fc42.noarch.rpm
 
 RUN dnf install -y go nodejs glibc-static git && dnf clean all
 
@@ -9,11 +11,6 @@ ARG GOPATH
 ENV GOPATH="/home/go/"
 
 ARG RELEASE_VERSION
-ENV RELEASE_VERSION=12.0.4
-ARG VERSION
-ENV VERSION=12.0.4
-ARG FORGEJO_RELEASE
-ENV FORGEJO_RELEASE=12.0.4
 
 ARG TAGS="sqlite sqlite_unlock_notify"
 ENV TAGS="bindata timetzdata $TAGS"
@@ -23,8 +20,10 @@ ENV CGO_ENABLED=1
 
 RUN mkdir -p ${GOPATH}src/forgejo.org
 
-RUN git clone --depth 1 --branch staging https://codeberg.org/fedora/forgejo.git ${GOPATH}src/forgejo.org
+RUN git clone --depth 1 --branch production https://codeberg.org/fedora/forgejo.git ${GOPATH}src/forgejo.org
 WORKDIR ${GOPATH}/src/forgejo.org
+
+COPY VERSION .
 
 RUN make clean-no-bindata
 RUN make frontend
@@ -43,7 +42,7 @@ RUN chmod 755 /tmp/local/usr/local/bin/docker-entrypoint.sh \
               /${GOPATH}src/forgejo.org/environment-to-ini
 RUN chmod 644 /${GOPATH}src/forgejo.org/contrib/autocompletion/bash_autocomplete
 
-FROM quay.io/fedora/fedora:42
+FROM quay.io/fedora/fedora:rawhide
 
 LABEL maintainer="codeberg@fedoraproject.org" \
       org.opencontainers.image.authors="Forgejo on Fedora" \
