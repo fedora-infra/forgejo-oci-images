@@ -11,8 +11,8 @@ metadata:
       event == "push"
       && target_branch == "main"
       && ( ".tekton/forgejo-oci-images-prod-stable*".pathChanged()
-      &&   "forgejo/production/Dockerfile.prod_stable".pathChanged()
-      &&   "forgejo/production/VERSION".pathChanged() )
+      ||   "forgejo/production/Dockerfile.prod_stable".pathChanged()
+      ||   "forgejo/production/VERSION".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: forge-production
