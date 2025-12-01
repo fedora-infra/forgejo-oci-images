@@ -7,9 +7,12 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "false"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "main" && ( "/distgit/staging/***".pathChanged() || ".tekton/forgejo-oci-images-src-staging-stable-push.yaml".pathChanged()
-      || "Dockerfile.staging_stable".pathChanged() )
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "push"
+      && target_branch == "main"
+      && (".tekton/forgejo-oci-images-src-staging-stable*".pathChanged()
+      || "distgit/staging/Dockerfile.staging_stable".pathChanged()
+      || "distgit/staging/VERSION".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: src-staging
@@ -28,7 +31,7 @@ spec:
   - name: dockerfile
     value: Dockerfile.staging_stable
   - name: path-context
-    value: distgit/staging
+    value: /distgit/staging
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
@@ -527,14 +530,43 @@ spec:
         operator: in
         values:
         - "false"
+    - name: read-version
+      params:
+      - name: SOURCE_ARTIFACT
+        value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
+      - name: SCRIPT_RUNNER_IMAGE
+        value: quay.io/fedora/fedora-minimal:42
+      - name: ociStorage
+        value: $(params.output-image).script
+      - name: SCRIPT
+        value: |
+          #!/bin/bash
+          set -e
+          VERSION=$(cat /var/workdir/source/forgejo/staging/VERSION | tr -d '\n\r')
+          echo -n "v$VERSION" | tee "$SCRIPT_OUTPUT"
+      runAfter:
+      - prefetch-dependencies
+      taskRef:
+        params:
+        - name: name
+          value: run-script-oci-ta
+        - name: bundle
+          value: quay.io/konflux-ci/tekton-catalog/task-run-script-oci-ta:0.1@sha256:834a934f1e631a79aea7f2d001162cf90086e664e648c8ca15b69ad9798571ee
+        - name: kind
+          value: task
+        resolver: bundles
     - name: apply-tags
       params:
+      - name: ADDITIONAL_TAGS
+        value:
+        - $(tasks.read-version.results.SCRIPT_OUTPUT)
       - name: IMAGE_URL
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
       runAfter:
       - build-image-index
+      - read-version
       taskRef:
         params:
         - name: name

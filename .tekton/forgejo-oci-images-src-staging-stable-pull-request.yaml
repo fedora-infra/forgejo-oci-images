@@ -8,9 +8,10 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
-      == "main" && ( "/distgit/staging/***".pathChanged() || ".tekton/forgejo-oci-images-src-staging-stable-pull-request.yaml".pathChanged()
-      || "Dockerfile.staging_stable".pathChanged() )
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "pull_request"
+      && target_branch == "main"
+      && ".tekton/forgejo-oci-images-src-staging-stable*".pathChanged()
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: src-staging
@@ -31,7 +32,7 @@ spec:
   - name: dockerfile
     value: Dockerfile.staging_stable
   - name: path-context
-    value: distgit/staging
+    value: /distgit/staging
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
