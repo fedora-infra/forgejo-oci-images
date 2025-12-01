@@ -542,7 +542,7 @@ spec:
         value: |
           #!/bin/bash
           set -e
-          VERSION=$(cat /var/workdir/source/forgejo/staging/VERSION | tr -d '\n\r')
+          VERSION=$(cat /var/workdir/source/distgit/staging/VERSION | tr -d '\n\r')
           echo -n "v$VERSION" | tee "$SCRIPT_OUTPUT"
       runAfter:
       - prefetch-dependencies
