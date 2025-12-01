@@ -11,8 +11,8 @@ metadata:
       event == "push"
       && target_branch == "main"
       && ( ".tekton/forgejo-oci-images-stg-stable*".pathChanged()
-      &&   "forgejo/staging/Dockerfile.staging_stable".pathChanged()
-      &&   "forgejo/staging/VERSION".pathChanged() )
+      ||   "forgejo/staging/Dockerfile.staging_stable".pathChanged()
+      ||   "forgejo/staging/VERSION".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: forge-staging
