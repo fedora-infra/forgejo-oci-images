@@ -10,7 +10,7 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "push"
       && target_branch == "main"
-      && ( ".tekton/forgejo-oci-images-src-production-stable*".pathChanged()
+      && (".tekton/forgejo-oci-images-src-production-stable*".pathChanged()
       || "distgit/production/Dockerfile.prod_stable".pathChanged()
       || "distgit/production/VERSION".pathChanged() )
   creationTimestamp: null
