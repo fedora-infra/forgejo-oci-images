@@ -18,7 +18,7 @@ ENV CGO_ENABLED=1
 
 RUN mkdir -p ${GOPATH}src/forgejo.org
 
-RUN git clone --depth 1 --branch production https://codeberg.org/fedora/forgejo.git ${GOPATH}src/forgejo.org
+RUN git clone --depth 1 --branch src-production https://codeberg.org/fedora/forgejo.git ${GOPATH}src/forgejo.org
 WORKDIR ${GOPATH}/src/forgejo.org
 
 COPY VERSION .
