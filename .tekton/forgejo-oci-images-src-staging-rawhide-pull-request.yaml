@@ -11,7 +11,8 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "pull_request"
       && target_branch == "main"
-      && ".tekton/forgejo-oci-images-src-staging-rawhide*".pathChanged()
+      && (".tekton/forgejo-oci-images-src-staging-rawhide-pull-request.yaml".pathChanged()
+      || "Dockerfile.staging_rawhide".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: src-staging-rawhide
