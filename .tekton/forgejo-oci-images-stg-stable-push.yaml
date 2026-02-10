@@ -542,6 +542,7 @@ spec:
         value: |
           #!/bin/bash
           set -e
+          microdnf install -y git-core --setopt=install_weak_deps=0 -q
           VERSION=$(cat /var/workdir/source/forgejo/staging/VERSION | tr -d '\n\r')
           GIT_SHA=$(cd /var/workdir/source && git rev-parse --short=5 HEAD)
           echo -n "${VERSION}-${GIT_SHA}" | tee "$SCRIPT_OUTPUT"
