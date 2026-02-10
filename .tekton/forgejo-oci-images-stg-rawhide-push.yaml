@@ -535,7 +535,7 @@ spec:
       - name: SOURCE_ARTIFACT
         value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
       - name: SCRIPT_RUNNER_IMAGE
-        value: quay.io/fedora/fedora-minimal:42
+        value: quay.io/fedora/fedora:42
       - name: ociStorage
         value: $(params.output-image).script
       - name: SCRIPT
@@ -543,7 +543,8 @@ spec:
           #!/bin/bash
           set -e
           VERSION=$(cat /var/workdir/source/forgejo/staging/VERSION | tr -d '\n\r')
-          echo -n "v$VERSION" | tee "$SCRIPT_OUTPUT"
+          GIT_SHA=$(cd /var/workdir/source && git rev-parse --short=5 HEAD)
+          echo -n "${VERSION}-${GIT_SHA}" | tee "$SCRIPT_OUTPUT"
       runAfter:
       - prefetch-dependencies
       taskRef:
