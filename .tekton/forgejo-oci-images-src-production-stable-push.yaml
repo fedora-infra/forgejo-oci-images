@@ -535,13 +535,14 @@ spec:
       - name: SOURCE_ARTIFACT
         value: $(tasks.prefetch-dependencies.results.SOURCE_ARTIFACT)
       - name: SCRIPT_RUNNER_IMAGE
-        value: quay.io/fedora/fedora:42
+        value: quay.io/fedora/fedora-minimal:42
       - name: ociStorage
         value: $(params.output-image).script
       - name: SCRIPT
         value: |
           #!/bin/bash
           set -e
+          microdnf install -y git-core -q
           VERSION=$(cat /var/workdir/source/distgit/production/VERSION | tr -d '\n\r')
           GIT_SHA=$(cd /var/workdir/source && git rev-parse --short=5 HEAD)
           echo -n "${VERSION}-${GIT_SHA}" | tee "$SCRIPT_OUTPUT"
